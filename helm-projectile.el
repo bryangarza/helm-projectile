@@ -888,6 +888,11 @@ DIR is the project root, if not set then current directory is used"
 
 ;;;###autoload
 (defun helm-projectile-ag (&optional options)
+  (interactive (if current-prefix-arg (list (helm-read-string "option: " "" 'helm-ag--extra-options-history))))
+  (helm-projectile-ag-internal (projectile-project-root) options))
+
+;;;###autoload
+(defun helm-projectile-ag-internal (location &optional options)
   "Helm version of projectile-ag."
   (interactive (if current-prefix-arg (list (helm-read-string "option: " "" 'helm-ag--extra-options-history))))
   (if (require 'helm-ag nil t)
@@ -901,7 +906,7 @@ DIR is the project root, if not set then current directory is used"
                  (helm-ag-command-option options)
                  (helm-ag-base-command (concat helm-ag-base-command " " ignored))
                  (current-prefix-arg nil))
-            (helm-do-ag (projectile-project-root) (car (projectile-parse-dirconfig-file))))
+            (helm-do-ag location (car (projectile-parse-dirconfig-file))))
         (error "You're not in a project"))
     (when (yes-or-no-p "`helm-ag' is not installed. Install? ")
       (condition-case nil
